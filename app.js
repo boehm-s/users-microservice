@@ -1,42 +1,33 @@
-import app from './config/express';
-import createServer from './config/server';
-import routes from './../FRONT/routes/index';
-import apiRoutes from './API/routes/index';
+import ws		from  'ws';
+import createServer	from  './config/server';
+import dbConf		from  './config/db';
+import app		from  './config/app';
+import ext		from  './config/extends';
+import routes		from  './FRONT/routes/index';
+import apiRoutes	from  './API/routes/index';
+import wsRoutes		from  './WS';
 
-const server = createServer(app);
-const port = (process.env.PORT || '3000');
+const port	= '3000';
+const server	= createServer(app, port);
+const wsServer	= ws.Server;
+const wss	= new wsServer({server, path: '/'});
+
+ext.extendNativeObjects();
 
 // mount routes
 app.use('/', routes);
 app.use('/api', apiRoutes);
+ wsRoutes(wsServer, server);
 
-server.listen(port);
-console.log('server listening on port ' + port);
+(async function main() {
+    await dbConf.initDB();
+    server.listen(port);
+    console.log('server listening on port ' + port);
+})();
 
-
-
-
-// error handlers
-app.use((req, res, next) => {
-  let err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-if (app.get('env') === 'development') {
-  app.use((err, req, res, next) => {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
+wss.on('connection', ws => {
+    ws.on('message', msg => {
+	console.log('received: %s', msg);
     });
-  });
-}
-
-app.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
+    ws.send('something');
 });
