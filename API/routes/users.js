@@ -1,14 +1,39 @@
-import express		from 'express';
-import validation	from './../controllers/validation';
-import accessControl	from './../controllers/access';
-import usersCtrl	from './../controllers/users';
+import express                  from 'express';
+import passport			from '../../config/passport';
+import usersCtrl                from './../controllers/users';
+import {validateCreateUser,
+	validateUserBody,
+        transformUserBody,
+        checkUpdateRights}      from './../controllers/validation/users';
+import {getAdwordsConf}		from './../controllers/adwords';
+import access                   from './../helpers/access';
+import {meException}            from './../helpers/users';
 
-const router = express.Router();
+const usersRoutes = express.Router();
 
-router.route('/')
-    .get(accessControl.authorize(['admin']),
+usersRoutes.route('/')
+    .get(access(['user', 'manager']),
 	 usersCtrl.getAll)
-    .post(validation.body(['firstname', 'lastname', 'email', 'birthdate', 'password', 'role']),
-	  usersCtrl.create);
+    .post(access(['manager']),
+          validateCreateUser,
+          transformUserBody,
+	  getAdwordsConf,
+          usersCtrl.create);
 
-export default router;
+usersRoutes.route('/login')
+    .post(passport.authenticate('local'),
+          (_req, res) => res.json({connected: true})
+	 );
+
+usersRoutes.route('/:id')
+    .get(access(['user', 'manager'], meException),
+	 usersCtrl.getById)
+    .put(access(['manager'], meException),
+         validateUserBody({presence: false}),
+         checkUpdateRights,
+         transformUserBody,
+	 usersCtrl.updateById)
+    .delete(access(['manager'], meException),
+	    usersCtrl.deleteById);
+
+export {usersRoutes};

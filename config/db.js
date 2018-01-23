@@ -1,10 +1,7 @@
-const initDB = async () => {
-    await Promise.resolve()
-	.then(() => {
-	    console.warn("default: no db");
-	    global.db = null;
-	})
-	.catch(err => console.error(err.stack));
-};
+const conf      = require('./../knexfile');
+const knex      = require('knex')(conf[process.env.NODE_ENV || "development"]);
+const bookshelf = require('bookshelf')(knex);
 
-export default {initDB};
+bookshelf.plugin('visibility');
+
+export default bookshelf;
