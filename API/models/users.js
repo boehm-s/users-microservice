@@ -1,7 +1,5 @@
 import Bookshelf		from '../../config/db';
 import roleModel		from './role';
-import usersAdwordsModel	from './usersAdwordsInfo';
-import managersAdwordsModel	from './managersAdwordsInfo';
 
 module.exports = Bookshelf.Model.extend({
     tableName: 'users',

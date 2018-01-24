@@ -1,29 +1,12 @@
 /* eslint-disable camelcase */
 import jwt                      from 'jsonwebtoken';
 import usersModel               from './../models/users';
-import adwordsModel             from './../models/adwords';
-import usersAdwordsModel	from './../models/usersAdwordsInfo';
 import {buildUser}              from './../helpers/users';
 import {conf}                   from './../../config/passport';
 
 const create = async (req, res, next) => {
     try {
-	/* create the user in adwords and get his customer_id */
-	const _adwordsUser = await adwordsModel.createUser(req.adwordsConf, {
-	    name: req.body.name,
-	    creator_customer_id: req.user.customer_id
-	});
-	const adwordsUser = _adwordsUser.value[0];
-
-        /* add the customer_id to the database */
-        const _adwordsInfo = await usersAdwordsModel.create({customer_id: adwordsUser.customerId});
-	const adwordsInfo = _adwordsInfo.toJSON();
-
-        var createdUser = await usersModel.create({
-	    ...req.body,
-	    adwords_info: adwordsInfo.id,
-	    manager: req.user.id  /* the current user should be the manager */
-	});
+        var createdUser = await usersModel.create(req.body);
     } catch (e) {
         return next(e);
     }
@@ -71,22 +54,7 @@ const deleteById = async (req, res, next) => {
     try {
         const user = (await usersModel.getById(req.params.id)).toJSON();
 
-        /* delete (hide) users in adwords */
-
-
-
-        /* delete the user */
 	await usersModel.deleteById(req.params.id);
-
-        /* delete user linked adwords data */
-        await usersAdwordsModel.deleteById(user.linkedAdwords.id);
-
-        /* if user is manager, delete manager linked adwords data  TODO? (Not implemented yet) */
-
-        // await adwordsModel.delete(req.adwordsConf, {
-        //     customer_id
-        // });
-
     } catch (e) {
 	return next(e);
     }

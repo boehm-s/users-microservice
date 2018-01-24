@@ -5,7 +5,6 @@ import {validateCreateUser,
 	validateUserBody,
         transformUserBody,
         checkUpdateRights}      from './../controllers/validation/users';
-import {getAdwordsConf}		from './../controllers/adwords';
 import access                   from './../helpers/access';
 import {meException}            from './../helpers/users';
 
@@ -17,7 +16,6 @@ usersRoutes.route('/')
     .post(access(['manager']),
           validateCreateUser,
           transformUserBody,
-	  getAdwordsConf,
           usersCtrl.create);
 
 usersRoutes.route('/login')
