@@ -1,13 +1,14 @@
-# adwords project
+# Users microservice Node / Express / PostgreSQL / Redis
 
-## Install dev environment
+## getting PostgreSQL and Redis from Docker
 
-You need : `NodeJS`, `npm`, and `PostgreSQL` latest stable versions, a postgres user.
-Install node dependencies and tools required for this project :
 
 ```
-npm i
+docker build . -t users-microservice
+docker run -it users-microservice
 ```
+
+
 
 Configure database :
 
@@ -32,3 +33,7 @@ Check if everything is alright :
 ```
 npm test
 ```
+
+### notes for me
+
+create a docker for the PostgreSQL DB, then find something like interfaces in node to do some kind of "socket" between the data source and the API
