@@ -2,10 +2,15 @@
 
 ## getting PostgreSQL and Redis from Docker
 
+Choosing ports :
+
+ - Redis: 7777
+ - PostgreSQL: 8888
+
 
 ```
 docker build . -t users-microservice
-docker run -it users-microservice
+docker run -it -p 7777:6379 -p 8888:5432 users-microservice:latest
 ```
 
 
@@ -13,12 +18,12 @@ docker run -it users-microservice
 Configure database :
 
 ```
-postgres@hostname:~$ createuser adwords
-postgres@hostname:~$ createdb adwords
+postgres@hostname:~$ createuser test
+postgres@hostname:~$ createdb test
 postgres@hostname:~$ psql
-postgres=# ALTER USER adwords WITH ENCRYPTED PASSWORD 'adwords';
+postgres=# ALTER USER test WITH ENCRYPTED PASSWORD 'test';
 ALTER ROLE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE adwords TO adwords;
+postgres=# GRANT ALL PRIVILEGES ON DATABASE test TO test;
 GRANT
 postgres@hostname:~$
 ```
@@ -33,7 +38,3 @@ Check if everything is alright :
 ```
 npm test
 ```
-
-### notes for me
-
-create a docker for the PostgreSQL DB, then find something like interfaces in node to do some kind of "socket" between the data source and the API
