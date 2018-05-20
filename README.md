@@ -14,16 +14,15 @@ docker run -it -p 7777:6379 -p 8888:5432 users-microservice:latest
 ```
 
 
-
 Configure database :
 
 ```
-postgres@hostname:~$ createuser test
-postgres@hostname:~$ createdb test
+postgres@hostname:~$ createuser um
+postgres@hostname:~$ createdb um
 postgres@hostname:~$ psql
-postgres=# ALTER USER test WITH ENCRYPTED PASSWORD 'test';
+postgres=# ALTER USER um WITH ENCRYPTED PASSWORD 'um';
 ALTER ROLE
-postgres=# GRANT ALL PRIVILEGES ON DATABASE test TO test;
+postgres=# GRANT ALL PRIVILEGES ON DATABASE um TO um;
 GRANT
 postgres@hostname:~$
 ```

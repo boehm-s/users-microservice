@@ -1,14 +1,7 @@
-FROM ubuntu
-
-RUN apt-get update && apt-get upgrade -y
-# RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
-# RUN apt-get install -y nodejs
-RUN apt-get install -y postgresql postgresql-contrib
-RUN apt-get install -y redis-server redis-tools
-# PostgreSQL
-EXPOSE 5432
-# Redis
-EXPOSE 6379
-
-ADD entrypoint.sh /entrypoint.sh
-CMD ["/bin/sh", "entrypoint.sh"]
+FROM node:9-slim
+# Working directory for application
+WORKDIR /usr/src/app
+# Binds to port 7777
+EXPOSE 7777
+# Creates a mount point
+VOLUME [ "/usr/src/app" ]
