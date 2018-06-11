@@ -5,6 +5,9 @@ services:
     build: .
     depends_on:
       - db
+      - redis
+    links:
+      - db
     ports:
       - "3000:3000"
       - "9229:9229"
@@ -15,6 +18,8 @@ services:
       DB_HOST: db
   db:
     image: postgres:10.4-alpine
+    expose:
+      - "5432"
     ports:
       - "15432:5432"
     environment:

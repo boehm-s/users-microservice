@@ -1,12 +1,13 @@
 module.exports = {
     development: {
-        client: 'postgresql',
+        client: 'pg',
         connection: {
             host: process.env.DB_HOST || 'localhost',
-            port: process.env.POSTGRES_PORT || '15432',
+            port: process.env.POSTGRES_PORT || '5432',
             database: process.env.POSTGRES_DB || 'users-microservice',
             user:     process.env.POSTGRES_USER || 'postgres',
-            password: process.env.POSTGRES_PASSWORD || 'postgres'
+            password: process.env.POSTGRES_PASSWORD || 'postgres',
+	    charset  : 'utf8'
         },
         pool: {
             min: 2,
@@ -17,13 +18,14 @@ module.exports = {
         }
     },
     production: {
-        client: 'postgresql',
+        client: 'pg',
         connection: {
-            host: process.env.DB_HOST || '127.0.0.1',
-            port: process.env.POSTGRES_PORT || '15432',
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.POSTGRES_PORT || '5432',
             database: process.env.POSTGRES_DB || 'users-microservice',
             user:     process.env.POSTGRES_USER || 'postgres',
-            password: process.env.POSTGRES_PASSWORD || 'postgres'
+            password: process.env.POSTGRES_PASSWORD || 'postgres',
+	    charset  : 'utf8'
         },
         pool: {
             min: 2,

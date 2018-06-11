@@ -36,6 +36,7 @@
 			},
 			"dependencies": {
 						"body-parser": "^1.18.3",
+						"bookshelf": "^0.13.3",
 						"cookie-parser": "^1.4.3",
 						"express": "*",
 						"express-session": "^1.15.6",
