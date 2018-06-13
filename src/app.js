@@ -1,6 +1,6 @@
-import http		from 'http';
-import app		from './config/app';
-import Bookshelf	from './config/db';
+import http      from 'http';
+import app       from './config/app';
+import Bookshelf from './config/db';
 
 const port	= '3000';
 const server	= http.createServer(app);

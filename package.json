@@ -31,7 +31,7 @@
 			"main": "app.js",
 			"scripts": {
 						"start": "node app.js",
-						"dev": "node_modules/.bin/nodemon  --inspect=0.0.0.0:9229 node_modules/.bin/babel-node app.js",
+						"dev": "node_modules/.bin/nodemon  --inspect=0.0.0.0:9229 node_modules/.bin/babel-node src/app.js",
 						"test": "echo \"Error: no test specified\" && exit 1"
 			},
 			"dependencies": {
