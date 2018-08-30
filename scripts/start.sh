@@ -12,5 +12,5 @@ npm i
 if [ "$NODE_ENV" == "production" ] ; then
   npm run start
 else
-  npm run dev
+  npm test && npm run dev
 fi

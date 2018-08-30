@@ -16,6 +16,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: users-microservice
       DB_HOST: db
+      NODE_ENV: 'development'
   db:
     image: postgres:10.4-alpine
     expose:

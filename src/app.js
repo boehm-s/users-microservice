@@ -7,6 +7,7 @@ const server	= http.createServer(app);
 
 
 app.use('/users', usersRoutes);
+app.get('/health-check', (_req, res) => res.json({success: true}));
 
 server.listen(port);
 console.log('server listening on port ' + port);

@@ -1,3 +1,6 @@
+
+//  https://stackoverflow.com/questions/41875617/building-enterprise-app-with-node-express/42164174
+
 const controllerHandler = (promise, params) => async (req, res, next) => {
     const boundParams = params ? params(req, res, next) : [];
 
