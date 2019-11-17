@@ -1,17 +1,12 @@
-import express                  from 'express';
-import usersCtrl                from './../controllers/users';
-import {controllerHandler as c} from './../helpers/utils';
+import express  from 'express';
 
-const usersRoutes = express.Router();
+const router = express.Router();
 
-usersRoutes.route('/')
-    .get(c(usersCtrl.getAll))
-    .post(c(usersCtrl.create, req => req.body));
+const notImplemented = (req, res) => res.end('Not Implemented Yet');
 
-usersRoutes.route('/:id')
-    .get(c(usersCtrl.getById, req => req.params.id))
-    .put(c(usersCtrl.updateById, req => req.params.id))
-    .delete(c(usersCtrl.deleteById, req => req.params.id));
 
-export {usersRoutes};
-export default usersRoutes;
+router.route('/')
+    .get(notImplemented)
+    .post(notImplemented);
+
+export default router;

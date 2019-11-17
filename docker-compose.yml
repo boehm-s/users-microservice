@@ -1,33 +1,28 @@
-# docker-compose.yml
-version: "3"
+version: '3'
 services:
-  app:
-    build:
-      context: .
-      args:
-        NODE_ENV: ${NODE_ENV}
+  api:
+    build: .
     depends_on:
-      - db
-      - redis
-    links:
-      - db
+      - postgresql
     ports:
-      - "3000:3000"
-      - "9229:9229"
+      - "3334:3334"
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: users-microservice
-      DB_HOST: db
-  db:
-    image: postgres:10.4-alpine
+      - PORT=3334
+      - DB_HOST=postgresql
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    volumes:
+      - ./src:/home/app/src
+  postgresql:
+    image: postgres:12.0-alpine
     expose:
       - "5432"
     ports:
-      - "15432:5432"
+      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: users-microservice
+
   redis:
     image: redis

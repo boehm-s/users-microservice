@@ -1,0 +1,1190 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: MOBI - Calendar API
+  description: Account system
+paths:
+  /auth/register:
+    post:
+      summary: S'enregistrer (créer un compte)
+      operationId: createAccount
+      tags:
+        - Authentication
+      requestBody:
+        description: Données utilisateur
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '409':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+  /auth/login:
+    post:
+      summary: Se connecter
+      operationId: login
+      tags:
+        - Authentication
+      requestBody:
+        description: Données utilisateur
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithToken'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+  /users:
+    get:
+      summary: List all users
+      operationId: ListAllUsers
+      tags:
+        - Users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+                
+
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      operationId: GetUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    put:
+      summary: Update by ID
+      operationId: UpdateUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+                
+    delete:
+      summary: Delete by ID
+      operationId: DeleteUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}/groups:
+    get:
+      summary: Get user groups
+      operationId: GetUserGroups
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupList'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}/events:
+    get:
+      summary: Get user events (with visibility details)
+      operationId: GetUserEvents
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventList'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}/notifications:
+    get:
+      summary: Get user pending invitations (for events or groups)
+      operationId: GetUserNotifs
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationList'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{id}/events/{event_id}:
+    post:
+      summary: Set user event visibility for other users or groups
+      operationId: UserEventVisibility
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: event_id
+          in: path
+          description: ID of the targeted event 
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: user and groups who have the right to see this event
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserEventVisibilityReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  
+  /users/{id}/calendar:
+    get:
+      summary: Get user visible events (public calendar)
+      operationId: GetUserVisibleEvents
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          description: ID of the user 
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventList'
+  
+  /roles:
+    post:
+      summary: Create a Role
+      operationId: CreateRole
+      tags:
+        - Roles
+      requestBody:
+        description: Données du role
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRoleReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    
+    get:
+      summary: List all roles
+      operationId: ListAllRoles
+      tags:
+        - Roles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolesList'
+                
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+                
+                
+
+  /roles/{id}:
+    get:
+      summary: Get role by ID
+      operationId: GetRoleById
+      tags:
+        - Roles
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    delete:
+      summary: Delete by ID
+      operationId: DeleteRoleById
+      tags:
+        - Roles
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+
+  /events:
+    post:
+      summary: Create an event
+      operationId: CreateEvent
+      tags:
+        - Events
+      requestBody:
+        description: Event data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      summary: List all events
+      operationId: ListAllEvents
+      tags:
+        - Events
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /events/{id}:
+    get:
+      summary: Get event by ID
+      operationId: GetEventById
+      tags:
+        - Events
+      parameters:
+        - name: id
+          in: path
+          description: ID of the event to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+    post:
+      summary: Add users to an event
+      operationId: InviteToEvent
+      tags:
+        - Events
+      parameters:
+        - name: id
+          in: path
+          description: ID of the event
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Mailboxes of the users invited to the event
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteToEventReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Cancel an event
+      operationId: CancelEvent
+      tags:
+        - Events
+      parameters:
+        - name: id
+          in: path
+          description: ID of the event to cancel
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+  /events/{id}/{user_id}:
+    put:
+      summary: Accept or decline a event invitation
+      operationId: EventInvitationResponse
+      tags:
+        - Events
+      parameters:
+        - name: id
+          in: path
+          description: ID of the event to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: path
+          description: ID of the user that will accept or decline the invitation
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Accept or decline
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                accept:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Uninvite user
+      operationId: UninviteUser
+      tags:
+        - Events
+      parameters:
+        - name: id
+          in: path
+          description: ID of the targeted event
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: path
+          description: ID of the user to be kicked off the event
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+
+  /groups:
+    post:
+      summary: Create a Group
+      operationId: CreateGroup
+      tags:
+        - Groups
+      requestBody:
+        description: Group data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    
+    get:
+      summary: List all groups
+      operationId: ListAllGroups
+      tags:
+        - Groups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupList'
+                
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /groups/{id}:
+    get:
+      summary: Get group by ID
+      operationId: GetGroupById
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Add members to a group
+      operationId: AddMembersToGroup
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Mailboxes of the users to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMembersToGroupReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Delete a group by ID
+      operationId: DeleteGroupById
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          description: ID of the role to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+                
+  /groups/{id}/{user_id}:
+    put:
+      summary: Accept or decline a group invitation
+      operationId: GroupInvitationResponse
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          description: ID of the group to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: path
+          description: ID of the user that will accept or decline the invitation
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Accept or decline
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                accept:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Remove member from group
+      operationId: RemoveMemberFromGroup
+      tags:
+        - Groups
+      parameters:
+        - name: id
+          in: path
+          description: ID of the targeted group
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: user_id
+          in: path
+          description: ID of the user to be kicked off the group
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+components:
+  schemas:
+    AuthReq:
+      required: 
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    CreateRoleReq:
+      required: 
+        - authority
+      properties:
+        authority: 
+          type: string
+          example: "USER"
+
+    Role:
+      properties:
+        id:
+          type: integer
+        authority:
+          type: string
+
+    RolesList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Role'
+
+    User:
+      properties:
+        id:
+          type: integer
+          example: 42
+        email: 
+          type: string
+          example: "plop@mail.net"
+        role:
+          type: string
+          example: "USER"
+
+    UsersList:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+
+    UserWithToken:
+      properties:
+        id:
+          type: integer
+        email: 
+          type: string
+        role:
+          type: string
+        token:
+          type: string
+
+    CreateGroupReq:
+      required: 
+        - name
+      properties:
+        name:
+          type: string
+          example: "Climbing Team"
+        description:
+          type: string
+          example: "A group of people enjoying going to Arkose Montreuil !"
+        
+    AddMembersToGroupReq:
+      type: array
+      example: ["boehm_s@seed-up.io", "capsule@cat.io", "punky@cat.io"]
+      items:
+        type: string
+
+    Group:
+      required: 
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 12
+        user:
+          $ref:  '#/components/schemas/User'
+        name:
+          type: string
+          example: "Climbing Team"
+        description:
+          type: string
+          example: "A group of people enjoying going to Arkose Montreuil !"
+        members:
+          $ref:  '#/components/schemas/UsersList'
+
+    GroupList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Group'
+
+
+    CreateEventReq:
+      required: 
+        - name
+        - start
+        - end
+      properties:
+        name:
+          type: string
+          example: "Climbing Arkose Montreuil"
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+
+    Event:
+      required: 
+        - id
+        - name
+        - user
+        - start
+        - end
+      properties:
+        id:
+          type: integer
+          example: 42
+        name:
+          type: string
+          example: "Climbing Arkose Montreuil"
+        user:
+          $ref:  '#/components/schemas/User'
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        atendees:
+          type: array
+          items:
+            properties:
+              id:
+                type: integer
+                example: 42
+              email: 
+                type: string
+                example: "plop@mail.net"
+              role:
+                type: string
+                example: "USER"
+              accepted:
+                type: boolean
+                nullable: true
+
+    EventList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Event'
+    
+    
+    
+    Invitation:
+      properties:
+        user_id:
+          type: integer
+          example: 23
+        nature: 
+          type: string
+          enum: [events, groups]
+        name: 
+          type: string
+          example: "Baseball group"
+        object_id:
+          type: integer
+          example: 435
+
+
+    NotificationList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Invitation'
+
+    InviteToEventReq:
+      type: array
+      items:
+        type: string
+        format: email
+
+    UserEventVisibilityReq:
+      properties:
+        groups_ids:
+          type: array
+          example: [1,3,54,85]
+          items: 
+            type: integer
+        users_ids:
+          type: array
+          example: [4,8,15,16,23,42]
+          items: 
+            type: integer
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

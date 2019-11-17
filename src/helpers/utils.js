@@ -1,16 +1,9 @@
+const validateReqBody = joiSchema => async (req, res, next) => {
+    const checkBody = joiSchema.validate(req.body);
 
-//  https://stackoverflow.com/questions/41875617/building-enterprise-app-with-node-express/42164174
-
-const controllerHandler = (promise, params) => async (req, res, next) => {
-    const boundParams = params ? params(req, res, next) : [];
-
-    try {
-	const result = await promise(...boundParams);
-	return res.json(result || { message: 'OK' });
-    } catch (error) {
-	return res.status(500) && next(error);
-    }
+    return checkBody.error
+        ? res.status(400).json({code: 400, message: checkBody.error.details.message})
+        : next();
 };
 
-export {controllerHandler};
-export default {controllerHandler};
+export default {validateReqBody};

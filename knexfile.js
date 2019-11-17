@@ -6,7 +6,7 @@ const conf = {
         database: process.env.POSTGRES_DB || 'users-microservice',
         user:     process.env.POSTGRES_USER || 'postgres',
         password: process.env.POSTGRES_PASSWORD || 'postgres',
-	charset  : 'utf8'
+	      charset  : 'utf8'
     },
     pool: {
         min: 2,
